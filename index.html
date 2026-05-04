@@ -209,8 +209,68 @@
   .hero p {
     font-size: 15px;
     color: var(--dark-steel);
-    max-width: 580px;
+    max-width: none;
     line-height: 1.6;
+  }
+
+  .brands-link {
+    color: var(--accent);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font: inherit;
+    font-size: 15px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    padding: 0;
+  }
+
+  .brands-link:hover { color: var(--charcoal); }
+
+  .brands-modal {
+    background: var(--paper);
+    max-width: 680px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 40px;
+    position: relative;
+    border: 1px solid var(--feather);
+  }
+
+  .brands-modal h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .brand-entry {
+    margin-bottom: 28px;
+  }
+
+  .brand-entry:last-child { margin-bottom: 0; }
+
+  .brand-entry h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .brand-entry h3 a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 400;
+    margin-left: 6px;
+  }
+
+  .brand-entry h3 a:hover { text-decoration: underline; }
+
+  .brand-entry p {
+    font-size: 13px;
+    color: var(--dark-steel);
+    line-height: 1.65;
   }
 
   .filters-wrap {
@@ -488,6 +548,7 @@
 <section class="hero">
   <h1>3D Source Gear</h1>
   <p>Curated team merch on premium blanks. Each style is its own configuration. Click any item to order through Printful at base production cost. No retail markup. Mockups on this page are higher resolution and closer to what the finished product will look like compared to the order page on Printful.</p>
+  <p style="margin-top: 12px;">Only premium suppliers have been selected to hold the 3D Source logo. <button class="brands-link" onclick="openBrandsModal()">More info on these brands.</button></p>
 </section>
 
 <div class="filters-wrap">
@@ -502,6 +563,33 @@
     <h3>Loading products from Notion…</h3>
   </div>
 </section>
+
+<div class="modal-overlay hidden" id="brands-overlay" onclick="if(event.target===this)closeBrandsModal()">
+  <div class="brands-modal">
+    <button class="modal-close" onclick="closeBrandsModal()">&times;</button>
+    <h2>About Our Brands</h2>
+
+    <div class="brand-entry">
+      <h3>Bella+Canvas <a href="https://bellacanvas.com" target="_blank" rel="noopener">bellacanvas.com</a></h3>
+      <p>Founded in 1998 and based in Los Angeles, Bella+Canvas is the go-to brand for retail-quality blanks with a modern, fashion-forward fit. Their tees are known for buttery-soft Airlume combed and ring-spun cotton, slim fits, and one of the widest color and style ranges in the industry. Manufactured ethically (FLA Accredited, WRAP Certified) with sustainable practices including bluesign approved dyes and pre-shrunk fabric for minimal shrinkage. Best for brands that want a contemporary, lightweight feel and a fitted silhouette. Note that styles run a bit slim, so size up for a relaxed look.</p>
+    </div>
+
+    <div class="brand-entry">
+      <h3>Comfort Colors <a href="https://comfortcolors.com" target="_blank" rel="noopener">comfortcolors.com</a></h3>
+      <p>Started in Vermont in 1975 and now part of Gildan (acquired 2015), Comfort Colors pioneered the garment-dyed style. Heavyweight 100% ring-spun cotton tees, tanks, and fleece with a lived-in softness, relaxed fit, and a vintage, weathered look right out of the bag. Famous for a deep palette of nature-inspired pigment-dyed colors that fade beautifully over time. Hugely popular with college bookstores, screen printers, and lifestyle brands wanting a soft-washed, retro feel. Heavier weight and a looser cut than Bella+Canvas. Note that some color and length variation is normal due to the dye process.</p>
+    </div>
+
+    <div class="brand-entry">
+      <h3>Independent Trading Co. <a href="https://independenttradingco.com" target="_blank" rel="noopener">independenttradingco.com</a></h3>
+      <p>Southern California-based, founded in 1987 with roots in action sports. The undisputed leader in blank fleece, especially heavyweight hoodies and crewnecks. The flagship IND4000 is considered a streetwear industry standard, and the line spans lightweight to super-heavyweight options including pigment-dyed, tie-dyed, special blend, and premium cross-grain styles. Known for solid construction, quality fleece, and consistency across runs. Best choice when hoodies, sweatshirts, joggers, or jackets are the focus rather than tees.</p>
+    </div>
+
+    <div class="brand-entry">
+      <h3>Stanley/Stella <a href="https://stanleystella.com" target="_blank" rel="noopener">stanleystella.com</a></h3>
+      <p>Brussels-based and founded in 2012, Stanley/Stella is the premium sustainability play. Every garment is made from 100% GOTS-certified organic cotton or recycled polyester, ranking among the top five organic cotton buyers globally. Fair Wear Foundation certified production with full supply chain traceability. The line covers tees, hoodies, sweats, and outerwear in modern European fits, varied weights (155 to 350 GSM), and an evolving on-trend color palette. Engineered for clean print and DTG performance. Best for eco-conscious brands and premium merch where sustainability is part of the story. Sizing tends to run a bit relaxed compared to US brands.</p>
+    </div>
+  </div>
+</div>
 
 <div class="lightbox hidden" id="lightbox" onclick="closeLightbox()">
   <img id="lightbox-img" src="" alt="">
@@ -745,6 +833,18 @@
     document.body.style.overflow = '';
   }
 
+  const brandsOverlay = document.getElementById('brands-overlay');
+
+  function openBrandsModal() {
+    brandsOverlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeBrandsModal() {
+    brandsOverlay.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
 
@@ -764,6 +864,7 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       if (!lightbox.classList.contains('hidden')) closeLightbox();
+      else if (!brandsOverlay.classList.contains('hidden')) closeBrandsModal();
       else if (!modalOverlay.classList.contains('hidden')) closeModal();
     }
   });
