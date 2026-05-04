@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Configurable 3D Source Gear</title>
+<title>3D Source Gear</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -296,6 +296,7 @@
     justify-content: center;
     transition: border-color 0.2s ease;
     position: relative;
+    cursor: zoom-in;
   }
 
   .product:hover .product-image { border-color: var(--dark-steel); }
@@ -304,6 +305,28 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 16, 16, 0.85);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+    padding: 24px;
+  }
+
+  .lightbox.hidden { display: none; }
+
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   .product-image.placeholder {
@@ -463,8 +486,8 @@
 </header>
 
 <section class="hero">
-  <h1>Configurable 3D Source Gear</h1>
-  <p>Curated team merch on premium blanks. Each style is its own configuration. Click any item to order through Printful at base production cost. No retail markup.</p>
+  <h1>3D Source Gear</h1>
+  <p>Curated team merch on premium blanks. Each style is its own configuration. Click any item to order through Printful at base production cost. No retail markup. Mockups on this page are higher resolution and closer to what the finished product will look like compared to the order page on Printful.</p>
 </section>
 
 <div class="filters-wrap">
@@ -480,8 +503,12 @@
   </div>
 </section>
 
+<div class="lightbox hidden" id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
 <footer>
-  Configurable 3D Source Gear · Powered by Printful MerchShare · Managed in Notion
+  3D Source Gear · Powered by Printful MerchShare · Managed in Notion
 </footer>
 
 <div class="modal-overlay hidden" id="modal-overlay" onclick="if(event.target===this)closeModal()">
@@ -669,6 +696,14 @@
         `;
         productsContainer.appendChild(article);
 
+        if (hasImage) {
+          const imgContainer = article.querySelector('.product-image');
+          imgContainer.addEventListener('click', (e) => {
+            e.preventDefault();
+            openLightbox(imgUrl, p.name);
+          });
+        }
+
         const desc = article.querySelector('.product-desc');
         if (desc.scrollHeight > desc.clientHeight) {
           desc.classList.add('clamped');
@@ -710,8 +745,27 @@
     document.body.style.overflow = '';
   }
 
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+
+  function openLightbox(src, alt) {
+    lightboxImg.src = src;
+    lightboxImg.alt = alt;
+    lightbox.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.add('hidden');
+    document.body.style.overflow = '';
+    lightboxImg.src = '';
+  }
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) closeModal();
+    if (e.key === 'Escape') {
+      if (!lightbox.classList.contains('hidden')) closeLightbox();
+      else if (!modalOverlay.classList.contains('hidden')) closeModal();
+    }
   });
 </script>
 
