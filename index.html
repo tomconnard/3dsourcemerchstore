@@ -586,23 +586,50 @@
     margin-bottom: 8px;
     border-radius: 0;
   }
+  .order-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--charcoal);
+    color: var(--off-white);
+    text-decoration: none;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.18s ease;
+    border: 1px solid var(--charcoal);
+  }
+  .order-btn:hover { background: var(--off-white); color: var(--charcoal); }
+  .order-btn .arrow { transition: transform 0.18s ease; }
+  .order-btn:hover .arrow { transform: translateX(4px); }
+
+  .order-divider {
+    text-align: center;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--light-steel);
+    padding: 8px 0;
+    font-weight: 500;
+  }
+
   .add-to-cart-btn {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    background: var(--charcoal);
-    color: var(--off-white);
+    background: var(--off-white);
+    color: var(--charcoal);
     padding: 10px 16px;
     font-size: 13px;
     font-weight: 500;
     font-family: inherit;
-    border: 1px solid var(--charcoal);
+    border: 1px solid var(--feather);
     cursor: pointer;
     transition: all 0.18s ease;
   }
-  .add-to-cart-btn:hover { background: var(--off-white); color: var(--charcoal); }
+  .add-to-cart-btn:hover { background: var(--charcoal); color: var(--off-white); border-color: var(--charcoal); }
   .add-to-cart-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .added-msg {
     text-align: center;
@@ -859,7 +886,7 @@
 
 <section class="hero">
   <h1>3D Source Gear</h1>
-  <p>Curated team merch on premium blanks. Each style is its own configuration. Select your color and size, add items to your order, and submit. All items are at production cost with no retail markup. Orders are reviewed and batched by an admin before being placed with Printful.</p>
+  <p>Curated team merch on premium blanks. Each style is its own configuration. Order a single item directly through Printful, or use the batch order option to combine multiple items into one shipment. All items are at production cost with no retail markup. Batch orders are reviewed by an admin before being placed.</p>
   <p style="margin-top: 12px;">Only premium suppliers have been selected to hold the 3D Source logo. <button class="brands-link" onclick="openBrandsModal()">More info on these brands.</button></p>
 </section>
 
@@ -1111,17 +1138,26 @@
           ? `<div class="product-tags">${tags.map(t => `<span class="product-tag">${escapeHtml(t)}</span>`).join('')}</div>`
           : '';
 
+        const hasUrl = p.url && p.url.trim() !== '';
         const colorOpts = (p.colors || []).map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
         const sizeOpts = (p.sizes || []).map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
         const hasOptions = colorOpts && sizeOpts;
+
+        const orderBtnHtml = hasUrl
+          ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="order-btn">
+               <span>Order on Printful</span><span class="arrow">&rarr;</span>
+             </a>`
+          : '';
 
         const pickerHtml = hasOptions
           ? `<div class="order-picker">
                <select class="pick-color"><option value="">Select color</option>${colorOpts}</select>
                <select class="pick-size"><option value="">Select size</option>${sizeOpts}</select>
-               <button class="add-to-cart-btn" disabled>Add to Order</button>
+               <button class="add-to-cart-btn" disabled>Add to Batch Order</button>
              </div>`
-          : `<div class="order-picker" style="text-align:center;font-size:12px;color:var(--light-steel);">Colors &amp; sizes not configured yet</div>`;
+          : '';
+
+        const dividerHtml = orderBtnHtml && pickerHtml ? '<div class="order-divider">or batch order</div>' : '';
 
         article.innerHTML = `
           <div class="product-image ${!hasImage ? 'placeholder' : ''}">
@@ -1130,6 +1166,8 @@
           </div>
           <h2 class="product-name">${escapeHtml(p.name)}</h2>
           <p class="product-desc">${escapeHtml(descText)}</p>
+          ${orderBtnHtml}
+          ${dividerHtml}
           ${pickerHtml}
         `;
         productsContainer.appendChild(article);
@@ -1182,7 +1220,7 @@
             addBtn.disabled = true;
             const msg = document.createElement('div');
             msg.className = 'added-msg';
-            msg.textContent = 'Added to order!';
+            msg.textContent = 'Added to batch order!';
             picker.appendChild(msg);
             setTimeout(() => msg.remove(), 2000);
           });
