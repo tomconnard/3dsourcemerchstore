@@ -6,7 +6,7 @@
 <title>Configurable 3D Source Gear</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --charcoal: #101010;
@@ -21,7 +21,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'Inter Tight', sans-serif;
+    font-family: 'Archivo', sans-serif;
     background: var(--paper);
     color: var(--charcoal);
     -webkit-font-smoothing: antialiased;
@@ -48,7 +48,7 @@
   }
 
   .brand {
-    font-family: 'Fraunces', serif;
+    font-family: 'Archivo', sans-serif;
     font-weight: 500;
     font-size: 22px;
     letter-spacing: -0.02em;
@@ -65,11 +65,125 @@
     padding: 8px 14px;
     border-radius: 100px;
     transition: all 0.18s ease;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
   }
 
   .edit-link:hover {
     border-color: var(--charcoal);
     color: var(--charcoal);
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 16, 16, 0.5);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+  }
+
+  .modal-overlay.hidden {
+    display: none;
+  }
+
+  .modal {
+    background: var(--paper);
+    max-width: 560px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 40px;
+    position: relative;
+    border: 1px solid var(--feather);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--light-steel);
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+    transition: color 0.18s ease;
+  }
+
+  .modal-close:hover { color: var(--charcoal); }
+
+  .modal h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .modal .modal-intro {
+    color: var(--dark-steel);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+
+  .modal h3 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--charcoal);
+    margin-bottom: 12px;
+  }
+
+  .modal ol {
+    padding-left: 20px;
+    margin-bottom: 28px;
+  }
+
+  .modal ol li {
+    font-size: 13px;
+    color: var(--dark-steel);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .modal p.modal-section {
+    font-size: 13px;
+    color: var(--dark-steel);
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+
+  .modal a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .modal a:hover { color: var(--charcoal); }
+
+  .modal-links {
+    border-top: 1px solid var(--feather);
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-links a {
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 640px) {
+    .modal { padding: 28px 20px; }
   }
 
   .hero {
@@ -79,7 +193,7 @@
   }
 
   .hero h1 {
-    font-family: 'Fraunces', serif;
+    font-family: 'Archivo', sans-serif;
     font-weight: 300;
     font-size: clamp(40px, 6vw, 72px);
     line-height: 1.0;
@@ -171,7 +285,7 @@
 
   .product-image-placeholder-text {
     color: var(--light-steel);
-    font-family: 'Fraunces', serif;
+    font-family: 'Archivo', sans-serif;
     font-size: 14px;
     font-style: italic;
     text-align: center;
@@ -194,7 +308,7 @@
   }
 
   .product-name {
-    font-family: 'Fraunces', serif;
+    font-family: 'Archivo', sans-serif;
     font-size: 22px;
     font-weight: 400;
     line-height: 1.15;
@@ -246,7 +360,7 @@
   }
 
   .loading-state h3, .error-state h3 {
-    font-family: 'Fraunces', serif;
+    font-family: 'Archivo', sans-serif;
     font-size: 28px;
     font-weight: 400;
     color: var(--charcoal);
@@ -293,7 +407,7 @@
 <header>
   <div class="header-inner">
     <div class="brand">Configurable 3D Source Gear</div>
-    <a href="https://www.notion.so/356e382585b480989ba7d2584b3e7e6c" target="_blank" rel="noopener" class="edit-link">Edit in Notion</a>
+    <button class="edit-link" onclick="openModal()">How to Add Products</button>
   </div>
 </header>
 
@@ -323,6 +437,34 @@
 <footer>
   Configurable 3D Source Gear · Powered by Printful MerchShare · Managed in Notion
 </footer>
+
+<div class="modal-overlay hidden" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2>How This Store Works</h2>
+    <p class="modal-intro">Products are managed in a Notion database and printed on-demand through Printful at production cost. No retail markup. Orders are routed to store admins for approval before the company card is charged.</p>
+
+    <h3>To Add a New Product</h3>
+    <ol>
+      <li>Log in to <a href="https://www.printful.com/dashboard/product-templates" target="_blank" rel="noopener">Printful Product Templates</a> and create a new template. Match brand colors — logos are already loaded in the portal.</li>
+      <li>Once the template is created, copy its share link.</li>
+      <li>Log in to the <a href="https://www.notion.so/356e382585b480989ba7d2584b3e7e6c" target="_blank" rel="noopener">Notion Product Database</a> (use <strong>3dsourceteam@gmail.com</strong>), or request access via the link.</li>
+      <li>Add a new row: paste the Printful URL, fill in Title, Style, Type, and Description, upload a product photo, and check <strong>Active</strong>.</li>
+      <li>The store updates automatically within 5 minutes.</li>
+    </ol>
+
+    <h3>Purchasing</h3>
+    <p class="modal-section">All items are sold at production cost. When a team member places an order, it routes to Printful store admins for approval before being charged to the company card.</p>
+
+    <h3>Need Access?</h3>
+    <p class="modal-section">Ask to be added as an admin to both the Notion workspace and the Printful store.</p>
+
+    <div class="modal-links">
+      <a href="https://www.notion.so/356e382585b480989ba7d2584b3e7e6c" target="_blank" rel="noopener">Notion Product Database &rarr;</a>
+      <a href="https://www.printful.com/dashboard/product-templates" target="_blank" rel="noopener">Printful Product Templates &rarr;</a>
+    </div>
+  </div>
+</div>
 
 <script>
   let products = [];
@@ -421,6 +563,22 @@
   });
 
   loadProducts();
+
+  const modalOverlay = document.getElementById('modal-overlay');
+
+  function openModal() {
+    modalOverlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modalOverlay.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) closeModal();
+  });
 </script>
 
 </body>
