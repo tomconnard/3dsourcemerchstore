@@ -530,6 +530,315 @@
     .header-inner, .hero, .filters { padding-left: 24px; padding-right: 24px; }
   }
 
+  .cart-btn {
+    position: relative;
+    font-size: 12px;
+    color: var(--light-steel);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    border: 1px solid var(--feather);
+    padding: 8px 14px;
+    border-radius: 100px;
+    transition: all 0.18s ease;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .cart-btn:hover { border-color: var(--charcoal); color: var(--charcoal); }
+  .cart-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    padding: 0 5px;
+  }
+  .cart-badge.empty { display: none; }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* Add-to-order picker */
+  .order-picker {
+    border: 1px solid var(--feather);
+    padding: 12px;
+    margin-top: auto;
+    background: var(--off-white);
+  }
+  .order-picker select {
+    width: 100%;
+    padding: 6px 8px;
+    font-family: inherit;
+    font-size: 12px;
+    border: 1px solid var(--feather);
+    background: var(--paper);
+    color: var(--charcoal);
+    margin-bottom: 8px;
+    border-radius: 0;
+  }
+  .add-to-cart-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--charcoal);
+    color: var(--off-white);
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    border: 1px solid var(--charcoal);
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .add-to-cart-btn:hover { background: var(--off-white); color: var(--charcoal); }
+  .add-to-cart-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .added-msg {
+    text-align: center;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 500;
+    padding: 6px 0 0;
+  }
+
+  /* Cart drawer */
+  .cart-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 16, 16, 0.4);
+    z-index: 150;
+  }
+  .cart-drawer-overlay.hidden { display: none; }
+  .cart-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 420px;
+    max-width: 90vw;
+    height: 100vh;
+    background: var(--paper);
+    z-index: 151;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--feather);
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+  }
+  .cart-drawer.open { transform: translateX(0); }
+  .cart-drawer-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--feather);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cart-drawer-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .cart-drawer-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--light-steel);
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+  .cart-drawer-close:hover { color: var(--charcoal); }
+  .cart-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+  }
+  .cart-empty {
+    text-align: center;
+    color: var(--light-steel);
+    font-size: 14px;
+    padding: 40px 0;
+  }
+  .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--feather);
+    gap: 12px;
+  }
+  .cart-item-info {
+    flex: 1;
+  }
+  .cart-item-name {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .cart-item-details {
+    font-size: 12px;
+    color: var(--dark-steel);
+  }
+  .cart-item-qty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .cart-item-qty button {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--feather);
+    background: var(--off-white);
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+  }
+  .cart-item-qty button:hover { border-color: var(--charcoal); }
+  .cart-item-qty span {
+    font-size: 13px;
+    font-weight: 500;
+    min-width: 16px;
+    text-align: center;
+  }
+  .cart-item-remove {
+    background: none;
+    border: none;
+    color: var(--light-steel);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+  }
+  .cart-item-remove:hover { color: var(--charcoal); }
+  .cart-drawer-footer {
+    border-top: 1px solid var(--feather);
+    padding: 20px 24px;
+  }
+  .checkout-btn {
+    width: 100%;
+    background: var(--charcoal);
+    color: var(--off-white);
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    border: 1px solid var(--charcoal);
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .checkout-btn:hover { background: var(--off-white); color: var(--charcoal); }
+
+  /* Checkout form */
+  .checkout-form {
+    padding: 16px 24px;
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .checkout-form.active { display: flex; }
+  .checkout-form label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--charcoal);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .checkout-form input,
+  .checkout-form textarea,
+  .checkout-form select {
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    border: 1px solid var(--feather);
+    background: var(--off-white);
+    color: var(--charcoal);
+    border-radius: 0;
+  }
+  .checkout-form textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+  .checkout-form .radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .checkout-form .radio-group label {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 400;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .checkout-form .radio-group input[type="radio"] {
+    width: auto;
+    padding: 0;
+  }
+  .submit-order-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .submit-order-btn:hover { opacity: 0.9; }
+  .submit-order-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .checkout-back {
+    background: none;
+    border: 1px solid var(--feather);
+    padding: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--dark-steel);
+    cursor: pointer;
+    width: 100%;
+  }
+  .checkout-back:hover { border-color: var(--charcoal); color: var(--charcoal); }
+  .order-success {
+    text-align: center;
+    padding: 40px 24px;
+  }
+  .order-success h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .order-success p {
+    font-size: 13px;
+    color: var(--dark-steel);
+    line-height: 1.6;
+  }
+  .order-success .order-id {
+    font-family: monospace;
+    background: var(--off-white);
+    padding: 4px 10px;
+    font-size: 13px;
+    display: inline-block;
+    margin: 12px 0;
+  }
+
   @media (max-width: 640px) {
     .products { grid-template-columns: 1fr; }
     .hero h1 { font-size: 40px; }
@@ -541,13 +850,16 @@
 <header>
   <div class="header-inner">
     <a href="/" class="brand"><img src="/assets/logo.png" alt="3D Source" class="brand-logo"></a>
-    <button class="edit-link" onclick="openModal()">How to Add Products</button>
+    <div class="header-actions">
+      <button class="edit-link" onclick="openModal()">How to Add Products</button>
+      <button class="cart-btn" onclick="openCart()">Cart <span class="cart-badge empty" id="cart-badge">0</span></button>
+    </div>
   </div>
 </header>
 
 <section class="hero">
   <h1>3D Source Gear</h1>
-  <p>Curated team merch on premium blanks. Each style is its own configuration. Click any item to order through Printful at base production cost. No retail markup. Mockups on this page are higher resolution and closer to what the finished product will look like compared to the order page on Printful.</p>
+  <p>Curated team merch on premium blanks. Each style is its own configuration. Select your color and size, add items to your order, and submit. All items are at production cost with no retail markup. Orders are reviewed and batched by an admin before being placed with Printful.</p>
   <p style="margin-top: 12px;">Only premium suppliers have been selected to hold the 3D Source logo. <button class="brands-link" onclick="openBrandsModal()">More info on these brands.</button></p>
 </section>
 
@@ -588,6 +900,40 @@
       <h3>Stanley/Stella <a href="https://stanleystella.com" target="_blank" rel="noopener">stanleystella.com</a></h3>
       <p>Brussels-based and founded in 2012, Stanley/Stella is the premium sustainability play. Every garment is made from 100% GOTS-certified organic cotton or recycled polyester, ranking among the top five organic cotton buyers globally. Fair Wear Foundation certified production with full supply chain traceability. The line covers tees, hoodies, sweats, and outerwear in modern European fits, varied weights (155 to 350 GSM), and an evolving on-trend color palette. Engineered for clean print and DTG performance. Best for eco-conscious brands and premium merch where sustainability is part of the story. Sizing tends to run a bit relaxed compared to US brands.</p>
     </div>
+  </div>
+</div>
+
+<div class="cart-drawer-overlay hidden" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-drawer-header">
+    <h2>Your Order</h2>
+    <button class="cart-drawer-close" onclick="closeCart()">&times;</button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <div class="cart-empty">Your cart is empty</div>
+  </div>
+  <div class="checkout-form" id="checkout-form">
+    <label>Name <input type="text" id="checkout-name" placeholder="Your full name"></label>
+    <label>Email <input type="email" id="checkout-email" placeholder="you@3dsource.com"></label>
+    <label>Shipping
+      <div class="radio-group">
+        <label><input type="radio" name="shipping" value="Poland Office" checked> Poland Office</label>
+        <label><input type="radio" name="shipping" value="Chicago Office"> Chicago Office</label>
+        <label><input type="radio" name="shipping" value="Other"> Other (enter address below)</label>
+      </div>
+    </label>
+    <label id="address-label" style="display:none;">Shipping Address <textarea id="checkout-address" placeholder="Full shipping address"></textarea></label>
+    <button class="submit-order-btn" id="submit-order-btn" onclick="submitOrder()">Submit Order</button>
+    <button class="checkout-back" onclick="showCartItems()">Back to cart</button>
+  </div>
+  <div class="order-success hidden" id="order-success">
+    <h3>Order Submitted</h3>
+    <p>Your order has been sent for review.</p>
+    <div class="order-id" id="order-id-display"></div>
+    <p>You'll hear back once it's approved and placed with Printful.</p>
+  </div>
+  <div class="cart-drawer-footer" id="cart-footer">
+    <button class="checkout-btn" id="checkout-btn" onclick="showCheckout()">Checkout</button>
   </div>
 </div>
 
@@ -765,13 +1111,17 @@
           ? `<div class="product-tags">${tags.map(t => `<span class="product-tag">${escapeHtml(t)}</span>`).join('')}</div>`
           : '';
 
-        const buttonHtml = hasUrl
-          ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="order-btn" onclick="alert('Remember to select your color and size on the next page.')">
-               <span>Order on Printful</span><span class="arrow">→</span>
-             </a>`
-          : `<a href="#" class="order-btn" style="opacity:0.4;cursor:not-allowed;" onclick="return false;">
-               <span>No link configured</span><span class="arrow">→</span>
-             </a>`;
+        const colorOpts = (p.colors || []).map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+        const sizeOpts = (p.sizes || []).map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+        const hasOptions = colorOpts && sizeOpts;
+
+        const pickerHtml = hasOptions
+          ? `<div class="order-picker">
+               <select class="pick-color"><option value="">Select color</option>${colorOpts}</select>
+               <select class="pick-size"><option value="">Select size</option>${sizeOpts}</select>
+               <button class="add-to-cart-btn" disabled>Add to Order</button>
+             </div>`
+          : `<div class="order-picker" style="text-align:center;font-size:12px;color:var(--light-steel);">Colors &amp; sizes not configured yet</div>`;
 
         article.innerHTML = `
           <div class="product-image ${!hasImage ? 'placeholder' : ''}">
@@ -780,7 +1130,7 @@
           </div>
           <h2 class="product-name">${escapeHtml(p.name)}</h2>
           <p class="product-desc">${escapeHtml(descText)}</p>
-          ${buttonHtml}
+          ${pickerHtml}
         `;
         productsContainer.appendChild(article);
 
@@ -805,6 +1155,37 @@
             btn.textContent = expanded ? 'View more' : 'View less';
           });
           desc.insertAdjacentElement('afterend', btn);
+        }
+
+        if (hasOptions) {
+          const picker = article.querySelector('.order-picker');
+          const colorSel = picker.querySelector('.pick-color');
+          const sizeSel = picker.querySelector('.pick-size');
+          const addBtn = picker.querySelector('.add-to-cart-btn');
+
+          function checkReady() {
+            addBtn.disabled = !colorSel.value || !sizeSel.value;
+          }
+          colorSel.addEventListener('change', checkReady);
+          sizeSel.addEventListener('change', checkReady);
+
+          addBtn.addEventListener('click', () => {
+            addToCart({
+              productId: p.id,
+              name: p.name,
+              color: colorSel.value,
+              size: sizeSel.value,
+              qty: 1
+            });
+            colorSel.value = '';
+            sizeSel.value = '';
+            addBtn.disabled = true;
+            const msg = document.createElement('div');
+            msg.className = 'added-msg';
+            msg.textContent = 'Added to order!';
+            picker.appendChild(msg);
+            setTimeout(() => msg.remove(), 2000);
+          });
         }
       });
     });
@@ -861,9 +1242,166 @@
     lightboxImg.src = '';
   }
 
+  // --- Cart ---
+  let cart = JSON.parse(localStorage.getItem('3ds-cart') || '[]');
+
+  function saveCart() {
+    localStorage.setItem('3ds-cart', JSON.stringify(cart));
+    updateCartBadge();
+  }
+
+  function updateCartBadge() {
+    const badge = document.getElementById('cart-badge');
+    const total = cart.reduce((sum, item) => sum + item.qty, 0);
+    badge.textContent = total;
+    badge.classList.toggle('empty', total === 0);
+  }
+
+  function addToCart(item) {
+    const existing = cart.find(c => c.productId === item.productId && c.color === item.color && c.size === item.size);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push(item);
+    }
+    saveCart();
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    saveCart();
+    renderCart();
+  }
+
+  function updateQty(index, delta) {
+    cart[index].qty += delta;
+    if (cart[index].qty < 1) cart[index].qty = 1;
+    saveCart();
+    renderCart();
+  }
+
+  const cartOverlay = document.getElementById('cart-overlay');
+  const cartDrawer = document.getElementById('cart-drawer');
+  const cartItemsEl = document.getElementById('cart-items');
+  const checkoutForm = document.getElementById('checkout-form');
+  const orderSuccess = document.getElementById('order-success');
+  const cartFooter = document.getElementById('cart-footer');
+
+  function openCart() {
+    cartOverlay.classList.remove('hidden');
+    cartDrawer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    showCartItems();
+    renderCart();
+  }
+
+  function closeCart() {
+    cartOverlay.classList.add('hidden');
+    cartDrawer.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function showCartItems() {
+    cartItemsEl.style.display = '';
+    checkoutForm.classList.remove('active');
+    orderSuccess.classList.add('hidden');
+    cartFooter.style.display = '';
+    renderCart();
+  }
+
+  function showCheckout() {
+    if (cart.length === 0) return;
+    cartItemsEl.style.display = 'none';
+    cartFooter.style.display = 'none';
+    orderSuccess.classList.add('hidden');
+    checkoutForm.classList.add('active');
+  }
+
+  function renderCart() {
+    if (cart.length === 0) {
+      cartItemsEl.innerHTML = '<div class="cart-empty">Your cart is empty</div>';
+      document.getElementById('checkout-btn').disabled = true;
+      return;
+    }
+    document.getElementById('checkout-btn').disabled = false;
+
+    cartItemsEl.innerHTML = cart.map((item, i) => `
+      <div class="cart-item">
+        <div class="cart-item-info">
+          <div class="cart-item-name">${escapeHtml(item.name)}</div>
+          <div class="cart-item-details">${escapeHtml(item.color)} · ${escapeHtml(item.size)}</div>
+          <div class="cart-item-qty">
+            <button onclick="updateQty(${i}, -1)">-</button>
+            <span>${item.qty}</span>
+            <button onclick="updateQty(${i}, 1)">+</button>
+          </div>
+        </div>
+        <button class="cart-item-remove" onclick="removeFromCart(${i})">&times;</button>
+      </div>
+    `).join('');
+  }
+
+  // Shipping radio toggle
+  document.querySelectorAll('input[name="shipping"]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('address-label').style.display =
+        document.querySelector('input[name="shipping"]:checked').value === 'Other' ? '' : 'none';
+    });
+  });
+
+  async function submitOrder() {
+    const name = document.getElementById('checkout-name').value.trim();
+    const email = document.getElementById('checkout-email').value.trim();
+    const shipping = document.querySelector('input[name="shipping"]:checked').value;
+    const shippingAddress = document.getElementById('checkout-address').value.trim();
+
+    if (!name || !email) {
+      alert('Please enter your name and email.');
+      return;
+    }
+    if (shipping === 'Other' && !shippingAddress) {
+      alert('Please enter a shipping address.');
+      return;
+    }
+
+    const submitBtn = document.getElementById('submit-order-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    try {
+      const res = await fetch('/api/submit-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, shipping, shippingAddress, items: cart })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to submit order');
+
+      cart = [];
+      saveCart();
+      checkoutForm.classList.remove('active');
+      cartFooter.style.display = 'none';
+      orderSuccess.classList.remove('hidden');
+      document.getElementById('order-id-display').textContent = data.orderId;
+
+      document.getElementById('checkout-name').value = '';
+      document.getElementById('checkout-email').value = '';
+      document.getElementById('checkout-address').value = '';
+    } catch (err) {
+      alert('Error: ' + err.message);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Order';
+    }
+  }
+
+  updateCartBadge();
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       if (!lightbox.classList.contains('hidden')) closeLightbox();
+      else if (cartDrawer.classList.contains('open')) closeCart();
       else if (!brandsOverlay.classList.contains('hidden')) closeBrandsModal();
       else if (!modalOverlay.classList.contains('hidden')) closeModal();
     }

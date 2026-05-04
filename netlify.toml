@@ -7,3 +7,8 @@
   from = "/api/products"
   to = "/.netlify/functions/products"
   status = 200
+
+[[redirects]]
+  from = "/api/submit-order"
+  to = "/.netlify/functions/submit-order"
+  status = 200
