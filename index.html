@@ -678,7 +678,7 @@
           : '';
 
         const buttonHtml = hasUrl
-          ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="order-btn">
+          ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="order-btn" onclick="alert('Remember to select your color and size on the next page.')">
                <span>Order on Printful</span><span class="arrow">→</span>
              </a>`
           : `<a href="#" class="order-btn" style="opacity:0.4;cursor:not-allowed;" onclick="return false;">
