@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurable 3D Source Gear</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --charcoal: #101010;
+    --dark-steel: #34302F;
+    --light-steel: #8A8582;
+    --feather: #DADACE;
+    --off-white: #F3F2F0;
+    --paper: #F8F7F5;
+    --accent: #0F334D;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter Tight', sans-serif;
+    background: var(--paper);
+    color: var(--charcoal);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  header {
+    border-bottom: 1px solid var(--feather);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+    background: rgba(248, 247, 245, 0.92);
+  }
+
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .brand {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+
+  .edit-link {
+    font-size: 12px;
+    color: var(--light-steel);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    border: 1px solid var(--feather);
+    padding: 8px 14px;
+    border-radius: 100px;
+    transition: all 0.18s ease;
+  }
+
+  .edit-link:hover {
+    border-color: var(--charcoal);
+    color: var(--charcoal);
+  }
+
+  .hero {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 72px 32px 48px;
+  }
+
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+    max-width: 900px;
+  }
+
+  .hero p {
+    font-size: 15px;
+    color: var(--dark-steel);
+    max-width: 580px;
+    line-height: 1.6;
+  }
+
+  .filters-wrap {
+    border-top: 1px solid var(--feather);
+    border-bottom: 1px solid var(--feather);
+    background: var(--off-white);
+  }
+
+  .filters {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 16px 32px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: 1px solid var(--feather);
+    padding: 6px 14px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--dark-steel);
+    cursor: pointer;
+    border-radius: 100px;
+    transition: all 0.18s ease;
+  }
+
+  .filter-btn:hover { border-color: var(--charcoal); color: var(--charcoal); }
+  .filter-btn.active { background: var(--charcoal); color: var(--off-white); border-color: var(--charcoal); }
+
+  .filter-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--light-steel);
+  }
+
+  .products {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 48px 32px 120px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px 32px;
+  }
+
+  .product { display: flex; flex-direction: column; }
+  .product.hidden { display: none; }
+
+  .product-image {
+    aspect-ratio: 1 / 1.1;
+    background: var(--off-white);
+    border: 1px solid var(--feather);
+    margin-bottom: 16px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s ease;
+    position: relative;
+  }
+
+  .product:hover .product-image { border-color: var(--dark-steel); }
+
+  .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-image.placeholder {
+    background: linear-gradient(135deg, var(--off-white) 0%, var(--feather) 100%);
+  }
+
+  .product-image-placeholder-text {
+    color: var(--light-steel);
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-style: italic;
+    text-align: center;
+    padding: 0 24px;
+  }
+
+  .style-tag {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    background: var(--paper);
+    border: 1px solid var(--feather);
+    padding: 3px 8px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    color: var(--dark-steel);
+    z-index: 2;
+  }
+
+  .product-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+
+  .product-style-line {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--light-steel);
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+
+  .product-desc {
+    font-size: 13px;
+    color: var(--dark-steel);
+    line-height: 1.55;
+    margin-bottom: 20px;
+    flex-grow: 1;
+  }
+
+  .order-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--charcoal);
+    color: var(--off-white);
+    text-decoration: none;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.18s ease;
+    border: 1px solid var(--charcoal);
+    margin-top: auto;
+  }
+
+  .order-btn:hover { background: var(--off-white); color: var(--charcoal); }
+  .order-btn .arrow { transition: transform 0.18s ease; }
+  .order-btn:hover .arrow { transform: translateX(4px); }
+
+  .loading-state, .error-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 24px;
+    color: var(--light-steel);
+  }
+
+  .loading-state h3, .error-state h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-bottom: 8px;
+  }
+
+  .error-state p { max-width: 480px; margin: 8px auto 0; line-height: 1.6; }
+  .error-state code { background: var(--off-white); padding: 2px 6px; border-radius: 3px; font-size: 12px; }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--feather);
+    border-top-color: var(--charcoal);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 24px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer {
+    border-top: 1px solid var(--feather);
+    padding: 32px;
+    background: var(--charcoal);
+    color: var(--feather);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  @media (max-width: 960px) {
+    .products { grid-template-columns: repeat(2, 1fr); padding: 32px 24px 80px; gap: 32px 20px; }
+    .header-inner, .hero, .filters { padding-left: 24px; padding-right: 24px; }
+  }
+
+  @media (max-width: 640px) {
+    .products { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">Configurable 3D Source Gear</div>
+    <a href="https://www.notion.so/356e382585b480989ba7d2584b3e7e6c" target="_blank" rel="noopener" class="edit-link">Edit in Notion</a>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Configurable 3D Source Gear</h1>
+  <p>Curated team merch on premium blanks. Each style is its own configuration. Click any item to order through Printful at base production cost. No retail markup.</p>
+</section>
+
+<div class="filters-wrap">
+  <div class="filters">
+    <button class="filter-btn active" data-value="all">All</button>
+    <button class="filter-btn" data-value="tee">Tees</button>
+    <button class="filter-btn" data-value="hoodie">Hoodies</button>
+    <button class="filter-btn" data-value="sweatshirt">Sweatshirts</button>
+    <button class="filter-btn" data-value="hat">Hats</button>
+    <div class="filter-count"><span id="visible-count">0</span> items</div>
+  </div>
+</div>
+
+<section class="products" id="products">
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <h3>Loading products from Notion…</h3>
+  </div>
+</section>
+
+<footer>
+  Configurable 3D Source Gear · Powered by Printful MerchShare · Managed in Notion
+</footer>
+
+<script>
+  let products = [];
+  let activeFilter = 'all';
+
+  const productsContainer = document.getElementById('products');
+  const visibleCount = document.getElementById('visible-count');
+
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  async function loadProducts() {
+    try {
+      const res = await fetch('/api/products');
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+      products = await res.json();
+      render();
+    } catch (err) {
+      productsContainer.innerHTML = `
+        <div class="error-state">
+          <h3>Could not load products</h3>
+          <p>${escapeHtml(err.message)}</p>
+          <p style="margin-top:16px;font-size:12px;">If you're testing locally, make sure you're running <code>netlify dev</code> instead of opening the file directly. Static file:// won't reach the serverless function.</p>
+        </div>
+      `;
+      visibleCount.textContent = '0';
+    }
+  }
+
+  function render() {
+    productsContainer.innerHTML = '';
+    let visible = 0;
+
+    products.forEach(p => {
+      if (activeFilter !== 'all' && p.type !== activeFilter) return;
+      visible++;
+
+      const article = document.createElement('article');
+      article.className = 'product';
+
+      const hasImage = p.image && p.image.trim() !== '';
+      const hasUrl = p.url && p.url.trim() !== '';
+      const hasStyle = p.style && p.style.trim() !== '';
+
+      const imageHtml = hasImage
+        ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.parentElement.classList.add('placeholder');this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<div class=\\'product-image-placeholder-text\\'>Image unavailable</div>');">`
+        : `<div class="product-image-placeholder-text">${escapeHtml(p.name)}</div>`;
+
+      const styleTagHtml = hasStyle ? `<div class="style-tag">${escapeHtml(p.style)}</div>` : '';
+      const styleLineHtml = hasStyle ? `<div class="product-style-line">${escapeHtml(p.style)}</div>` : '';
+
+      const buttonHtml = hasUrl
+        ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="order-btn">
+             <span>Order on Printful</span><span class="arrow">→</span>
+           </a>`
+        : `<a href="#" class="order-btn" style="opacity:0.4;cursor:not-allowed;" onclick="return false;">
+             <span>No link configured</span><span class="arrow">→</span>
+           </a>`;
+
+      article.innerHTML = `
+        <div class="product-image ${!hasImage ? 'placeholder' : ''}">
+          ${styleTagHtml}
+          ${imageHtml}
+        </div>
+        <h2 class="product-name">${escapeHtml(p.name)}</h2>
+        ${styleLineHtml}
+        <p class="product-desc">${escapeHtml(p.desc || '')}</p>
+        ${buttonHtml}
+      `;
+      productsContainer.appendChild(article);
+    });
+
+    if (visible === 0 && products.length > 0) {
+      const empty = document.createElement('div');
+      empty.className = 'loading-state';
+      empty.innerHTML = '<h3>No products in this category</h3>';
+      productsContainer.appendChild(empty);
+    }
+
+    visibleCount.textContent = visible;
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFilter = btn.dataset.value;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+      render();
+    });
+  });
+
+  loadProducts();
+</script>
+
+</body>
+</html>
