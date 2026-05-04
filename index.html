@@ -48,10 +48,14 @@
   }
 
   .brand {
-    font-family: 'Archivo', sans-serif;
-    font-weight: 500;
-    font-size: 22px;
-    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .brand-logo {
+    height: 28px;
+    width: auto;
   }
 
   .edit-link {
@@ -220,17 +224,40 @@
     margin: 0 auto;
     padding: 16px 32px;
     display: flex;
-    gap: 6px;
+    gap: 8px;
     align-items: center;
     flex-wrap: wrap;
+  }
+
+  .filter-group {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--light-steel);
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
+  .filter-sep {
+    width: 1px;
+    height: 20px;
+    background: var(--feather);
+    margin: 0 8px;
   }
 
   .filter-btn {
     background: transparent;
     border: 1px solid var(--feather);
-    padding: 6px 14px;
+    padding: 5px 12px;
     font-family: inherit;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--dark-steel);
     cursor: pointer;
     border-radius: 100px;
@@ -292,10 +319,17 @@
     padding: 0 24px;
   }
 
-  .style-tag {
+  .product-tags {
     position: absolute;
     bottom: 8px;
     left: 8px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    z-index: 2;
+  }
+
+  .product-tag {
     background: var(--paper);
     border: 1px solid var(--feather);
     padding: 3px 8px;
@@ -304,7 +338,6 @@
     letter-spacing: 0.1em;
     font-weight: 500;
     color: var(--dark-steel);
-    z-index: 2;
   }
 
   .product-name {
@@ -316,22 +349,40 @@
     margin-bottom: 6px;
   }
 
-  .product-style-line {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--light-steel);
-    margin-bottom: 12px;
-    font-weight: 500;
-  }
-
   .product-desc {
     font-size: 13px;
     color: var(--dark-steel);
     line-height: 1.55;
     margin-bottom: 20px;
     flex-grow: 1;
+    max-height: 4.65em;
+    overflow: hidden;
+    position: relative;
   }
+
+  .product-desc.clamped::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1.6em;
+    background: linear-gradient(transparent, var(--paper));
+  }
+
+  .view-more {
+    font-size: 12px;
+    color: var(--accent);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  .view-more:hover { color: var(--charcoal); }
 
   .order-btn {
     display: flex;
@@ -406,7 +457,7 @@
 
 <header>
   <div class="header-inner">
-    <div class="brand">Configurable 3D Source Gear</div>
+    <a href="/" class="brand"><img src="/assets/logo.png" alt="3D Source" class="brand-logo"></a>
     <button class="edit-link" onclick="openModal()">How to Add Products</button>
   </div>
 </header>
@@ -417,12 +468,7 @@
 </section>
 
 <div class="filters-wrap">
-  <div class="filters">
-    <button class="filter-btn active" data-value="all">All</button>
-    <button class="filter-btn" data-value="tee">Tees</button>
-    <button class="filter-btn" data-value="hoodie">Hoodies</button>
-    <button class="filter-btn" data-value="sweatshirt">Sweatshirts</button>
-    <button class="filter-btn" data-value="hat">Hats</button>
+  <div class="filters" id="filters">
     <div class="filter-count"><span id="visible-count">0</span> items</div>
   </div>
 </div>
@@ -468,9 +514,20 @@
 
 <script>
   let products = [];
-  let activeFilter = 'all';
+
+  const filterDefs = [
+    { key: 'type', label: 'Type' },
+    { key: 'printType', label: 'Print' },
+    { key: 'brand', label: 'Brand' },
+    { key: 'logoType', label: 'Logo' },
+    { key: 'logoColor', label: 'Color' }
+  ];
+
+  const activeFilters = {};
+  filterDefs.forEach(f => activeFilters[f.key] = 'all');
 
   const productsContainer = document.getElementById('products');
+  const filtersContainer = document.getElementById('filters');
   const visibleCount = document.getElementById('visible-count');
 
   function escapeHtml(str) {
@@ -478,6 +535,69 @@
     return String(str)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  function buildFilters() {
+    const countEl = filtersContainer.querySelector('.filter-count');
+    filtersContainer.innerHTML = '';
+
+    filterDefs.forEach((def, i) => {
+      const values = [...new Set(products.map(p => p[def.key]).filter(Boolean))].sort();
+      if (values.length === 0) return;
+
+      if (filtersContainer.children.length > 0) {
+        const sep = document.createElement('div');
+        sep.className = 'filter-sep';
+        filtersContainer.appendChild(sep);
+      }
+
+      const group = document.createElement('div');
+      group.className = 'filter-group';
+
+      const label = document.createElement('span');
+      label.className = 'filter-label';
+      label.textContent = def.label;
+      group.appendChild(label);
+
+      const allBtn = document.createElement('button');
+      allBtn.className = 'filter-btn' + (activeFilters[def.key] === 'all' ? ' active' : '');
+      allBtn.textContent = 'All';
+      allBtn.addEventListener('click', () => {
+        activeFilters[def.key] = 'all';
+        buildFilters();
+        render();
+      });
+      group.appendChild(allBtn);
+
+      values.forEach(val => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn' + (activeFilters[def.key] === val ? ' active' : '');
+        btn.textContent = val;
+        btn.addEventListener('click', () => {
+          activeFilters[def.key] = val;
+          buildFilters();
+          render();
+        });
+        group.appendChild(btn);
+      });
+
+      filtersContainer.appendChild(group);
+    });
+
+    filtersContainer.appendChild(countEl || createCountEl());
+  }
+
+  function createCountEl() {
+    const div = document.createElement('div');
+    div.className = 'filter-count';
+    div.innerHTML = '<span id="visible-count">0</span> items';
+    return div;
+  }
+
+  function matchesFilters(p) {
+    return filterDefs.every(def =>
+      activeFilters[def.key] === 'all' || p[def.key] === activeFilters[def.key]
+    );
   }
 
   async function loadProducts() {
@@ -488,6 +608,7 @@
         throw new Error(err.error || `HTTP ${res.status}`);
       }
       products = await res.json();
+      buildFilters();
       render();
     } catch (err) {
       productsContainer.innerHTML = `
@@ -497,7 +618,7 @@
           <p style="margin-top:16px;font-size:12px;">If you're testing locally, make sure you're running <code>netlify dev</code> instead of opening the file directly. Static file:// won't reach the serverless function.</p>
         </div>
       `;
-      visibleCount.textContent = '0';
+      document.getElementById('visible-count').textContent = '0';
     }
   }
 
@@ -506,11 +627,13 @@
     let visible = 0;
 
     products.forEach(p => {
-      if (activeFilter !== 'all' && p.type !== activeFilter) return;
+      if (!matchesFilters(p)) return;
 
       const hasUrl = p.url && p.url.trim() !== '';
-      const hasStyle = p.style && p.style.trim() !== '';
       const images = p.images && p.images.length > 0 ? p.images : [''];
+      const descText = p.fullDesc || p.desc || '';
+
+      const tags = [p.printType, p.brand, p.logoType, p.logoColor].filter(Boolean);
 
       images.forEach(imgUrl => {
         visible++;
@@ -523,8 +646,9 @@
           ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.parentElement.classList.add('placeholder');this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<div class=\\'product-image-placeholder-text\\'>Image unavailable</div>');">`
           : `<div class="product-image-placeholder-text">${escapeHtml(p.name)}</div>`;
 
-        const styleTagHtml = hasStyle ? `<div class="style-tag">${escapeHtml(p.style)}</div>` : '';
-        const styleLineHtml = hasStyle ? `<div class="product-style-line">${escapeHtml(p.style)}</div>` : '';
+        const tagsHtml = tags.length > 0
+          ? `<div class="product-tags">${tags.map(t => `<span class="product-tag">${escapeHtml(t)}</span>`).join('')}</div>`
+          : '';
 
         const buttonHtml = hasUrl
           ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="order-btn">
@@ -536,35 +660,41 @@
 
         article.innerHTML = `
           <div class="product-image ${!hasImage ? 'placeholder' : ''}">
-            ${styleTagHtml}
+            ${tagsHtml}
             ${imageHtml}
           </div>
           <h2 class="product-name">${escapeHtml(p.name)}</h2>
-          ${styleLineHtml}
-          <p class="product-desc">${escapeHtml(p.desc || '')}</p>
+          <p class="product-desc">${escapeHtml(descText)}</p>
           ${buttonHtml}
         `;
         productsContainer.appendChild(article);
+
+        const desc = article.querySelector('.product-desc');
+        if (desc.scrollHeight > desc.clientHeight) {
+          desc.classList.add('clamped');
+          const btn = document.createElement('button');
+          btn.className = 'view-more';
+          btn.textContent = 'View more';
+          btn.addEventListener('click', () => {
+            const expanded = desc.style.maxHeight === 'none';
+            desc.style.maxHeight = expanded ? '' : 'none';
+            desc.classList.toggle('clamped', expanded);
+            btn.textContent = expanded ? 'View more' : 'View less';
+          });
+          desc.insertAdjacentElement('afterend', btn);
+        }
       });
     });
 
     if (visible === 0 && products.length > 0) {
       const empty = document.createElement('div');
       empty.className = 'loading-state';
-      empty.innerHTML = '<h3>No products in this category</h3>';
+      empty.innerHTML = '<h3>No products match these filters</h3>';
       productsContainer.appendChild(empty);
     }
 
-    visibleCount.textContent = visible;
+    document.getElementById('visible-count').textContent = visible;
   }
-
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeFilter = btn.dataset.value;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b === btn));
-      render();
-    });
-  });
 
   loadProducts();
 

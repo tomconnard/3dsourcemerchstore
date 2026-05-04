@@ -60,9 +60,13 @@ exports.handler = async (event) => {
       return {
         id: row.id,
         name: props['Title']?.title?.[0]?.plain_text || '',
-        style: props['Style']?.rich_text?.[0]?.plain_text || '',
-        type: props['Type']?.select?.name?.toLowerCase() || 'other',
+        type: props['Type']?.select?.name || '',
+        logoType: props['Logo Type']?.select?.name || '',
+        logoColor: props['Logo Color']?.select?.name || '',
+        printType: props['Print Type']?.select?.name || '',
+        brand: props['Brand']?.select?.name || '',
         desc: props['Description']?.rich_text?.[0]?.plain_text || '',
+        fullDesc: props['Full Description']?.rich_text?.[0]?.plain_text || '',
         url: props['Printful URL']?.url || '',
         images: images
       };
