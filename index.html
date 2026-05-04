@@ -507,41 +507,45 @@
 
     products.forEach(p => {
       if (activeFilter !== 'all' && p.type !== activeFilter) return;
-      visible++;
 
-      const article = document.createElement('article');
-      article.className = 'product';
-
-      const hasImage = p.image && p.image.trim() !== '';
       const hasUrl = p.url && p.url.trim() !== '';
       const hasStyle = p.style && p.style.trim() !== '';
+      const images = p.images && p.images.length > 0 ? p.images : [''];
 
-      const imageHtml = hasImage
-        ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.parentElement.classList.add('placeholder');this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<div class=\\'product-image-placeholder-text\\'>Image unavailable</div>');">`
-        : `<div class="product-image-placeholder-text">${escapeHtml(p.name)}</div>`;
+      images.forEach(imgUrl => {
+        visible++;
+        const article = document.createElement('article');
+        article.className = 'product';
 
-      const styleTagHtml = hasStyle ? `<div class="style-tag">${escapeHtml(p.style)}</div>` : '';
-      const styleLineHtml = hasStyle ? `<div class="product-style-line">${escapeHtml(p.style)}</div>` : '';
+        const hasImage = imgUrl && imgUrl.trim() !== '';
 
-      const buttonHtml = hasUrl
-        ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="order-btn">
-             <span>Order on Printful</span><span class="arrow">→</span>
-           </a>`
-        : `<a href="#" class="order-btn" style="opacity:0.4;cursor:not-allowed;" onclick="return false;">
-             <span>No link configured</span><span class="arrow">→</span>
-           </a>`;
+        const imageHtml = hasImage
+          ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.parentElement.classList.add('placeholder');this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<div class=\\'product-image-placeholder-text\\'>Image unavailable</div>');">`
+          : `<div class="product-image-placeholder-text">${escapeHtml(p.name)}</div>`;
 
-      article.innerHTML = `
-        <div class="product-image ${!hasImage ? 'placeholder' : ''}">
-          ${styleTagHtml}
-          ${imageHtml}
-        </div>
-        <h2 class="product-name">${escapeHtml(p.name)}</h2>
-        ${styleLineHtml}
-        <p class="product-desc">${escapeHtml(p.desc || '')}</p>
-        ${buttonHtml}
-      `;
-      productsContainer.appendChild(article);
+        const styleTagHtml = hasStyle ? `<div class="style-tag">${escapeHtml(p.style)}</div>` : '';
+        const styleLineHtml = hasStyle ? `<div class="product-style-line">${escapeHtml(p.style)}</div>` : '';
+
+        const buttonHtml = hasUrl
+          ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="order-btn">
+               <span>Order on Printful</span><span class="arrow">→</span>
+             </a>`
+          : `<a href="#" class="order-btn" style="opacity:0.4;cursor:not-allowed;" onclick="return false;">
+               <span>No link configured</span><span class="arrow">→</span>
+             </a>`;
+
+        article.innerHTML = `
+          <div class="product-image ${!hasImage ? 'placeholder' : ''}">
+            ${styleTagHtml}
+            ${imageHtml}
+          </div>
+          <h2 class="product-name">${escapeHtml(p.name)}</h2>
+          ${styleLineHtml}
+          <p class="product-desc">${escapeHtml(p.desc || '')}</p>
+          ${buttonHtml}
+        `;
+        productsContainer.appendChild(article);
+      });
     });
 
     if (visible === 0 && products.length > 0) {

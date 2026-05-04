@@ -54,14 +54,8 @@ exports.handler = async (event) => {
     const products = data.results.map(row => {
       const props = row.properties;
 
-      // Pull the first image URL from the Image files property
-      let imageUrl = '';
       const imageFiles = props['Image']?.files || [];
-      if (imageFiles.length > 0) {
-        const first = imageFiles[0];
-        // Notion files can be 'file' (uploaded) or 'external'
-        imageUrl = first.file?.url || first.external?.url || '';
-      }
+      const images = imageFiles.map(f => f.file?.url || f.external?.url || '').filter(Boolean);
 
       return {
         id: row.id,
@@ -70,7 +64,7 @@ exports.handler = async (event) => {
         type: props['Type']?.select?.name?.toLowerCase() || 'other',
         desc: props['Description']?.rich_text?.[0]?.plain_text || '',
         url: props['Printful URL']?.url || '',
-        image: imageUrl
+        images: images
       };
     });
 
