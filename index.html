@@ -387,6 +387,8 @@
     object-fit: contain;
     user-select: none;
     -webkit-user-select: none;
+    transition: transform 0.15s ease;
+    cursor: grab;
   }
 
   .product-image.placeholder {
@@ -575,17 +577,25 @@
     margin-top: auto;
     background: var(--off-white);
   }
-  .order-picker select {
-    width: 100%;
-    padding: 6px 8px;
+  .size-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .size-chip {
+    padding: 5px 12px;
     font-family: inherit;
     font-size: 12px;
     border: 1px solid var(--feather);
     background: var(--paper);
-    color: var(--charcoal);
-    margin-bottom: 8px;
-    border-radius: 0;
+    color: var(--dark-steel);
+    cursor: pointer;
+    border-radius: 100px;
+    transition: all 0.18s ease;
   }
+  .size-chip:hover { border-color: var(--charcoal); color: var(--charcoal); }
+  .size-chip.selected { background: var(--charcoal); color: var(--off-white); border-color: var(--charcoal); }
   .order-btn {
     display: flex;
     align-items: center;
@@ -1139,9 +1149,9 @@
           : '';
 
         const hasUrl = p.url && p.url.trim() !== '';
-        const colorOpts = (p.colors || []).map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-        const sizeOpts = (p.sizes || []).map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
-        const hasOptions = colorOpts && sizeOpts;
+        const productColor = (p.colors || [])[0] || '';
+        const sizeChips = (p.sizes || []).map(s => `<button class="size-chip" data-size="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('');
+        const hasSizes = sizeChips.length > 0;
 
         const orderBtnHtml = hasUrl
           ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="order-btn">
@@ -1149,10 +1159,9 @@
              </a>`
           : '';
 
-        const pickerHtml = hasOptions
+        const pickerHtml = hasSizes
           ? `<div class="order-picker">
-               <select class="pick-color"><option value="">Select color</option>${colorOpts}</select>
-               <select class="pick-size"><option value="">Select size</option>${sizeOpts}</select>
+               <div class="size-chips">${sizeChips}</div>
                <button class="add-to-cart-btn" disabled>Add to Batch Order</button>
              </div>`
           : '';
@@ -1195,28 +1204,31 @@
           desc.insertAdjacentElement('afterend', btn);
         }
 
-        if (hasOptions) {
+        if (hasSizes) {
           const picker = article.querySelector('.order-picker');
-          const colorSel = picker.querySelector('.pick-color');
-          const sizeSel = picker.querySelector('.pick-size');
+          const chips = picker.querySelectorAll('.size-chip');
           const addBtn = picker.querySelector('.add-to-cart-btn');
+          let selectedSize = '';
 
-          function checkReady() {
-            addBtn.disabled = !colorSel.value || !sizeSel.value;
-          }
-          colorSel.addEventListener('change', checkReady);
-          sizeSel.addEventListener('change', checkReady);
+          chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+              chips.forEach(c => c.classList.remove('selected'));
+              chip.classList.add('selected');
+              selectedSize = chip.dataset.size;
+              addBtn.disabled = false;
+            });
+          });
 
           addBtn.addEventListener('click', () => {
             addToCart({
               productId: p.id,
               name: p.name,
-              color: colorSel.value,
-              size: sizeSel.value,
+              color: productColor,
+              size: selectedSize,
               qty: 1
             });
-            colorSel.value = '';
-            sizeSel.value = '';
+            chips.forEach(c => c.classList.remove('selected'));
+            selectedSize = '';
             addBtn.disabled = true;
             const msg = document.createElement('div');
             msg.className = 'added-msg';
@@ -1267,9 +1279,13 @@
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightbox-img');
 
+  let lightboxZoom = 1;
+
   function openLightbox(src, alt) {
     lightboxImg.src = src;
     lightboxImg.alt = alt;
+    lightboxZoom = 1;
+    lightboxImg.style.transform = 'scale(1)';
     lightbox.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
   }
@@ -1278,7 +1294,19 @@
     lightbox.classList.add('hidden');
     document.body.style.overflow = '';
     lightboxImg.src = '';
+    lightboxZoom = 1;
   }
+
+  lightbox.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.15 : 0.15;
+    lightboxZoom = Math.max(0.5, Math.min(5, lightboxZoom + delta));
+    lightboxImg.style.transform = `scale(${lightboxZoom})`;
+  }, { passive: false });
+
+  lightboxImg.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
 
   // --- Cart ---
   let cart = JSON.parse(localStorage.getItem('3ds-cart') || '[]');
