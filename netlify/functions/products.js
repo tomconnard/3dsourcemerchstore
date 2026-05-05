@@ -67,6 +67,8 @@ exports.handler = async (event) => {
         brand: props['Brand']?.select?.name || '',
         desc: props['Description']?.rich_text?.[0]?.plain_text || '',
         fullDesc: props['Full Description']?.rich_text?.[0]?.plain_text || '',
+        material: props['Material']?.select?.name || '',
+        weight: props['Weight']?.select?.name || '',
         url: props['Printful URL']?.url || '',
         colors: props['Color']?.multi_select?.map(s => s.name) || [],
         sizes: props['Size']?.multi_select?.map(s => s.name) || [],
