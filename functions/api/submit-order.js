@@ -57,7 +57,7 @@ export async function onRequestPost(context) {
           'Order ID': {
             title: [{ text: { content: orderId } }]
           },
-          'Name': {
+          'Name 1': {
             rich_text: [{ text: { content: name } }]
           },
           'Email': {
