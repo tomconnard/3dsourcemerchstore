@@ -30,11 +30,7 @@
 
   header {
     border-bottom: 1px solid var(--feather);
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    backdrop-filter: blur(12px);
-    background: rgba(248, 247, 245, 0.92);
+    background: var(--paper);
   }
 
   .header-inner {
@@ -56,6 +52,14 @@
   .brand-logo {
     height: 28px;
     width: auto;
+  }
+
+  .brand-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--charcoal);
+    margin-left: 8px;
+    letter-spacing: -0.01em;
   }
 
   .edit-link {
@@ -193,7 +197,7 @@
   .hero {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 72px 32px 48px;
+    padding: 32px 32px 24px;
   }
 
   .hero h1 {
@@ -277,6 +281,11 @@
     border-top: 1px solid var(--feather);
     border-bottom: 1px solid var(--feather);
     background: var(--off-white);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+    background: rgba(243, 242, 240, 0.95);
   }
 
   .filters {
@@ -387,9 +396,32 @@
     object-fit: contain;
     user-select: none;
     -webkit-user-select: none;
-    transition: transform 0.15s ease;
     cursor: grab;
+    transform-origin: center center;
   }
+
+  .lightbox img.dragging { cursor: grabbing; }
+
+  .lightbox-close {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 201;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.18s ease;
+  }
+
+  .lightbox-close:hover { background: rgba(255,255,255,0.3); }
 
   .product-image.placeholder {
     background: linear-gradient(135deg, var(--off-white) 0%, var(--feather) 100%);
@@ -596,32 +628,16 @@
   }
   .size-chip:hover { border-color: var(--charcoal); color: var(--charcoal); }
   .size-chip.selected { background: var(--charcoal); color: var(--off-white); border-color: var(--charcoal); }
-  .order-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--charcoal);
-    color: var(--off-white);
-    text-decoration: none;
-    padding: 12px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.18s ease;
-    border: 1px solid var(--charcoal);
-  }
-  .order-btn:hover { background: var(--off-white); color: var(--charcoal); }
-  .order-btn .arrow { transition: transform 0.18s ease; }
-  .order-btn:hover .arrow { transform: translateX(4px); }
-
-  .order-divider {
-    text-align: center;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+  .printful-link {
+    display: block;
+    font-size: 12px;
     color: var(--light-steel);
-    padding: 8px 0;
-    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    margin-top: 8px;
+    transition: color 0.18s ease;
   }
+  .printful-link:hover { color: var(--accent); }
 
   .add-to-cart-btn {
     width: 100%;
@@ -886,7 +902,7 @@
 
 <header>
   <div class="header-inner">
-    <a href="/" class="brand"><img src="/assets/logo.png" alt="3D Source" class="brand-logo"></a>
+    <a href="/" class="brand"><img src="/assets/logo.png" alt="3D Source" class="brand-logo"><span class="brand-title">Gear</span></a>
     <div class="header-actions">
       <button class="edit-link" onclick="openModal()">How to Add Products</button>
       <button class="cart-btn" onclick="openCart()">Cart <span class="cart-badge empty" id="cart-badge">0</span></button>
@@ -895,7 +911,6 @@
 </header>
 
 <section class="hero">
-  <h1>3D Source Gear</h1>
   <p>Curated team merch on premium blanks. Each style is its own configuration. Order a single item directly through Printful, or use the batch order option to combine multiple items into one shipment. All items are at production cost with no retail markup. Batch orders are reviewed by an admin before being placed.</p>
   <p style="margin-top: 12px;">Only premium suppliers have been selected to hold the 3D Source logo. <button class="brands-link" onclick="openBrandsModal()">More info on these brands.</button></p>
 </section>
@@ -974,7 +989,8 @@
   </div>
 </div>
 
-<div class="lightbox hidden" id="lightbox" onclick="closeLightbox()">
+<div class="lightbox hidden" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
   <img id="lightbox-img" src="" alt="">
 </div>
 
@@ -1015,10 +1031,11 @@
 
   const filterDefs = [
     { key: 'type', label: 'Type' },
+    { key: 'garmentColor', label: 'Color' },
     { key: 'printType', label: 'Print' },
     { key: 'brand', label: 'Brand' },
-    { key: 'logoType', label: 'Logo' },
-    { key: 'logoColor', label: 'Color' }
+    { key: 'logoColor', label: 'Logo Color' },
+    { key: 'availableSize', label: 'Size', multi: true }
   ];
 
   const activeFilters = {};
@@ -1040,7 +1057,7 @@
     filtersContainer.innerHTML = '';
 
     filterDefs.forEach((def, i) => {
-      const values = [...new Set(products.map(p => p[def.key]).filter(Boolean))].sort();
+      const values = [...new Set(products.flatMap(p => def.multi ? (p[def.key] || []) : [p[def.key]]).filter(Boolean))].sort();
       if (values.length === 0) return;
 
       if (filtersContainer.children.length > 0) {
@@ -1093,9 +1110,11 @@
   }
 
   function matchesFilters(p) {
-    return filterDefs.every(def =>
-      activeFilters[def.key] === 'all' || p[def.key] === activeFilters[def.key]
-    );
+    return filterDefs.every(def => {
+      if (activeFilters[def.key] === 'all') return true;
+      if (def.multi) return (p[def.key] || []).includes(activeFilters[def.key]);
+      return p[def.key] === activeFilters[def.key];
+    });
   }
 
   async function loadProducts() {
@@ -1106,6 +1125,10 @@
         throw new Error(err.error || `HTTP ${res.status}`);
       }
       products = await res.json();
+      products.forEach(p => {
+        p.garmentColor = (p.colors || [])[0] || '';
+        p.availableSize = p.sizes || [];
+      });
       buildFilters();
       render();
     } catch (err) {
@@ -1153,10 +1176,8 @@
         const sizeChips = (p.sizes || []).map(s => `<button class="size-chip" data-size="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('');
         const hasSizes = sizeChips.length > 0;
 
-        const orderBtnHtml = hasUrl
-          ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="order-btn">
-               <span>Order on Printful</span><span class="arrow">&rarr;</span>
-             </a>`
+        const printfulLink = hasUrl
+          ? `<a href="${escapeHtml(p.url)}" target="_blank" rel="noopener" class="printful-link">Printful for single item ordering, size info etc.</a>`
           : '';
 
         const pickerHtml = hasSizes
@@ -1166,8 +1187,6 @@
              </div>`
           : '';
 
-        const dividerHtml = orderBtnHtml && pickerHtml ? '<div class="order-divider">or batch order</div>' : '';
-
         article.innerHTML = `
           <div class="product-image ${!hasImage ? 'placeholder' : ''}">
             ${tagsHtml}
@@ -1175,9 +1194,8 @@
           </div>
           <h2 class="product-name">${escapeHtml(p.name)}</h2>
           <p class="product-desc">${escapeHtml(descText)}</p>
-          ${orderBtnHtml}
-          ${dividerHtml}
           ${pickerHtml}
+          ${printfulLink}
         `;
         productsContainer.appendChild(article);
 
@@ -1280,12 +1298,19 @@
   const lightboxImg = document.getElementById('lightbox-img');
 
   let lightboxZoom = 1;
+  let panX = 0, panY = 0;
+  let isDragging = false, dragStartX = 0, dragStartY = 0, panStartX = 0, panStartY = 0;
+
+  function updateLightboxTransform() {
+    lightboxImg.style.transform = `translate(${panX}px, ${panY}px) scale(${lightboxZoom})`;
+  }
 
   function openLightbox(src, alt) {
     lightboxImg.src = src;
     lightboxImg.alt = alt;
     lightboxZoom = 1;
-    lightboxImg.style.transform = 'scale(1)';
+    panX = 0; panY = 0;
+    updateLightboxTransform();
     lightbox.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
   }
@@ -1295,17 +1320,44 @@
     document.body.style.overflow = '';
     lightboxImg.src = '';
     lightboxZoom = 1;
+    panX = 0; panY = 0;
   }
 
   lightbox.addEventListener('wheel', (e) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.15 : 0.15;
     lightboxZoom = Math.max(0.5, Math.min(5, lightboxZoom + delta));
-    lightboxImg.style.transform = `scale(${lightboxZoom})`;
+    if (lightboxZoom <= 1) { panX = 0; panY = 0; }
+    updateLightboxTransform();
   }, { passive: false });
 
-  lightboxImg.addEventListener('click', (e) => {
-    e.stopPropagation();
+  lightboxImg.addEventListener('mousedown', (e) => {
+    if (lightboxZoom <= 1) return;
+    e.preventDefault();
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    panStartX = panX;
+    panStartY = panY;
+    lightboxImg.classList.add('dragging');
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    panX = panStartX + (e.clientX - dragStartX);
+    panY = panStartY + (e.clientY - dragStartY);
+    updateLightboxTransform();
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      lightboxImg.classList.remove('dragging');
+    }
+  });
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
   });
 
   // --- Cart ---
