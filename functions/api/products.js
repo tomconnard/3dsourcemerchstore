@@ -48,8 +48,12 @@ export async function onRequestGet(context) {
       const imageFiles = props['Image']?.files || [];
       const images = imageFiles.map(f => f.file?.url || f.external?.url || '').filter(Boolean);
 
+      const uid = props['ID']?.unique_id;
+      const itemId = uid ? (uid.prefix ? uid.prefix + '-' + uid.number : String(uid.number)) : '';
+
       return {
         id: row.id,
+        itemId: itemId,
         name: props['Title']?.title?.[0]?.plain_text || '',
         type: props['Type']?.select?.name || '',
         logoType: props['Logo Type']?.select?.name || '',

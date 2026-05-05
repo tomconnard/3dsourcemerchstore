@@ -30,7 +30,7 @@ export async function onRequestPost(context) {
   const orderId = `ORD-${Date.now()}`;
 
   const itemsText = items.map((item, i) =>
-    `${i + 1}. ${item.name} — Size: ${item.size} — Color: ${item.color} — Qty: ${item.qty || 1}`
+    `${i + 1}. ${item.itemId ? '[' + item.itemId + '] ' : ''}${item.name} — Size: ${item.size} — Color: ${item.color} — Qty: ${item.qty || 1}`
   ).join('\n');
 
   // Notion rich_text blocks have a 2000-character limit; split into chunks

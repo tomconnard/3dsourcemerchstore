@@ -1187,7 +1187,7 @@
       const images = p.images && p.images.length > 0 ? p.images : [''];
       const descText = p.fullDesc || p.desc || '';
 
-      const tags = [p.brand].filter(Boolean);
+      const tags = [p.itemId, p.brand].filter(Boolean);
 
       images.forEach(imgUrl => {
         visible++;
@@ -1274,6 +1274,7 @@
           addBtn.addEventListener('click', () => {
             addToCart({
               productId: p.id,
+              itemId: p.itemId || '',
               name: p.name,
               color: productColor,
               size: selectedSize,
@@ -1488,7 +1489,7 @@
     cartItemsEl.innerHTML = cart.map((item, i) => `
       <div class="cart-item">
         <div class="cart-item-info">
-          <div class="cart-item-name">${escapeHtml(item.name)}</div>
+          <div class="cart-item-name">${item.itemId ? '<span style="color:var(--light-steel);font-size:11px;font-weight:400;margin-right:4px;">' + escapeHtml(item.itemId) + '</span>' : ''}${escapeHtml(item.name)}</div>
           <div class="cart-item-details">${escapeHtml(item.color)} · ${escapeHtml(item.size)}</div>
           <div class="cart-item-qty">
             <button onclick="updateQty(${i}, -1)">-</button>
