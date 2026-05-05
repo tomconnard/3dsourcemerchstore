@@ -1,0 +1,6 @@
+.git
+scripts
+temp-images
+.env
+.claude
+node_modules
