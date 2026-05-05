@@ -896,6 +896,17 @@
   @media (max-width: 640px) {
     .products { grid-template-columns: 1fr; }
     .hero h1 { font-size: 40px; }
+    .filters {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 12px;
+    }
+    .filters::-webkit-scrollbar { display: none; }
+    .filter-group { flex-shrink: 0; flex-wrap: nowrap; }
+    .filter-sep { flex-shrink: 0; }
+    .filter-count { flex-shrink: 0; }
   }
 </style>
 </head>
@@ -1270,7 +1281,7 @@
             addBtn.disabled = true;
             const msg = document.createElement('div');
             msg.className = 'added-msg';
-            msg.textContent = 'Added to batch order!';
+            msg.textContent = 'Added to cart!';
             picker.appendChild(msg);
             setTimeout(() => msg.remove(), 2000);
           });
@@ -1377,7 +1388,15 @@
   });
 
   lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) closeLightbox();
+    if (e.target === lightbox) {
+      if (lightboxZoom > 1) {
+        lightboxZoom = 1;
+        panX = 0; panY = 0;
+        updateLightboxTransform();
+      } else {
+        closeLightbox();
+      }
+    }
   });
 
   // --- Cart ---
@@ -1514,7 +1533,7 @@
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to submit order');
+      if (!res.ok) throw new Error(data.details || data.error || 'Failed to submit order');
 
       cart = [];
       saveCart();
@@ -1538,7 +1557,15 @@
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      if (!lightbox.classList.contains('hidden')) closeLightbox();
+      if (!lightbox.classList.contains('hidden')) {
+        if (lightboxZoom > 1) {
+          lightboxZoom = 1;
+          panX = 0; panY = 0;
+          updateLightboxTransform();
+        } else {
+          closeLightbox();
+        }
+      }
       else if (cartDrawer.classList.contains('open')) closeCart();
       else if (!brandsOverlay.classList.contains('hidden')) closeBrandsModal();
       else if (!modalOverlay.classList.contains('hidden')) closeModal();

@@ -33,6 +33,16 @@ export async function onRequestPost(context) {
     `${i + 1}. ${item.name} — Size: ${item.size} — Color: ${item.color} — Qty: ${item.qty || 1}`
   ).join('\n');
 
+  // Notion rich_text blocks have a 2000-character limit; split into chunks
+  const CHUNK_SIZE = 2000;
+  const itemsChunks = [];
+  for (let i = 0; i < itemsText.length; i += CHUNK_SIZE) {
+    itemsChunks.push({ text: { content: itemsText.slice(i, i + CHUNK_SIZE) } });
+  }
+  if (itemsChunks.length === 0) {
+    itemsChunks.push({ text: { content: '' } });
+  }
+
   try {
     const response = await fetch('https://api.notion.com/v1/pages', {
       method: 'POST',
@@ -60,7 +70,7 @@ export async function onRequestPost(context) {
             rich_text: [{ text: { content: shippingAddress || '' } }]
           },
           'Items': {
-            rich_text: [{ text: { content: itemsText } }]
+            rich_text: itemsChunks
           },
           'Status': {
             select: { name: 'Pending' }
