@@ -1182,8 +1182,9 @@
 
         const hasImage = imgUrl && imgUrl.trim() !== '';
 
+        const thumbUrl = hasImage ? imgUrl.replace(/\/mockups\//, '/mockups/thumbs/').replace(/\.(png|jpg|jpeg)$/i, '.jpg') : '';
         const imageHtml = hasImage
-          ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.parentElement.classList.add('placeholder');this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<div class=\\'product-image-placeholder-text\\'>Image unavailable</div>');">`
+          ? `<img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.parentElement.classList.add('placeholder');this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<div class=\\'product-image-placeholder-text\\'>Image unavailable</div>');">`
           : `<div class="product-image-placeholder-text">${escapeHtml(p.name)}</div>`;
 
         const tagsHtml = tags.length > 0
