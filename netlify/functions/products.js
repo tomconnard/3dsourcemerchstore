@@ -68,8 +68,8 @@ exports.handler = async (event) => {
         desc: props['Description']?.rich_text?.[0]?.plain_text || '',
         fullDesc: props['Full Description']?.rich_text?.[0]?.plain_text || '',
         url: props['Printful URL']?.url || '',
-        colors: props['Available Colors']?.multi_select?.map(s => s.name) || [],
-        sizes: props['Available Sizes']?.multi_select?.map(s => s.name) || [],
+        colors: props['Color']?.multi_select?.map(s => s.name) || [],
+        sizes: props['Size']?.multi_select?.map(s => s.name) || [],
         images: images
       };
     });
