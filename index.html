@@ -1032,10 +1032,8 @@
   const filterDefs = [
     { key: 'type', label: 'Type' },
     { key: 'colorGroup', label: 'Color' },
-    { key: 'printType', label: 'Print' },
     { key: 'brand', label: 'Brand' },
-    { key: 'logoColor', label: 'Logo Color' },
-    { key: 'availableSize', label: 'Size', multi: true }
+    { key: 'logoColor', label: 'Logo Color' }
   ];
 
   const activeFilters = {};
@@ -1127,10 +1125,10 @@
       products = await res.json();
 
       const colorGroups = {
-        'Blacks': ['Black','Vintage Black','Heather Black','Midnight'],
+        'Dark': ['Black','Vintage Black','Heather Black'],
         'Greys': ['Grey','Grey Heather','Heather Grey','Dark Grey','Graphite','Charcoal Solid','Athletic Heather','Athletic Grey Triblend','Grey Triblend','Silver','Asphalt','Anthracite'],
-        'Whites': ['White','Vintage White','White Fleck Triblend','White Heather','Ivory','Natural','Bone'],
-        'Blues': ['Navy','Dark Navy','French Navy','True Navy','Blue Jean','Denim','Washed Denim','Flo Blue','Mystic Blue','Storm Blue','Cobalt','Carolina Blue','Heather Blue Lagoon','Storm','True Royal Triblend','Heather Grey/Navy'],
+        'Light': ['White','Vintage White','White Fleck Triblend','White Heather','Ivory','Natural','Bone'],
+        'Blues': ['Navy','Dark Navy','French Navy','True Navy','Blue Jean','Denim','Washed Denim','Flo Blue','Mystic Blue','Storm Blue','Cobalt','Carolina Blue','Heather Blue Lagoon','Storm','True Royal Triblend','Heather Grey/Navy','Midnight'],
         'Earth Tones': ['Vintage Brown','Tan Triblend','Sandstone','Sand','Khaki','Desert Dust','Dust','Pepper','Granite','Heather Stone','Navy/Khaki','Natural/Black','Black/Silver'],
         'Warm': ['Dusty Rose']
       };
