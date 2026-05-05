@@ -1,34 +1,30 @@
 const NOTION_VERSION = '2022-06-28';
 
-exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
-  }
-
-  const NOTION_KEY = process.env.NOTION_KEY;
-  const ORDERS_DB_ID = process.env.NOTION_ORDERS_DB_ID;
+export async function onRequestPost(context) {
+  const NOTION_KEY = context.env.NOTION_KEY;
+  const ORDERS_DB_ID = context.env.NOTION_ORDERS_DB_ID;
 
   if (!NOTION_KEY || !ORDERS_DB_ID) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Missing NOTION_KEY or NOTION_ORDERS_DB_ID environment variable.' })
-    };
+    return Response.json(
+      { error: 'Missing NOTION_KEY or NOTION_ORDERS_DB_ID environment variable.' },
+      { status: 500 }
+    );
   }
 
   let body;
   try {
-    body = JSON.parse(event.body);
+    body = await context.request.json();
   } catch {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) };
+    return Response.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
   const { name, email, shipping, shippingAddress, items } = body;
 
   if (!name || !email || !shipping || !items || items.length === 0) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Missing required fields: name, email, shipping, and at least one item.' })
-    };
+    return Response.json(
+      { error: 'Missing required fields: name, email, shipping, and at least one item.' },
+      { status: 400 }
+    );
   }
 
   const orderId = `ORD-${Date.now()}`;
@@ -78,22 +74,15 @@ exports.handler = async (event) => {
 
     if (!response.ok) {
       const errText = await response.text();
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: 'Notion API error', details: errText })
-      };
+      return Response.json(
+        { error: 'Notion API error', details: errText },
+        { status: response.status }
+      );
     }
 
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ success: true, orderId })
-    };
+    return Response.json({ success: true, orderId });
 
   } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message })
-    };
+    return Response.json({ error: err.message }, { status: 500 });
   }
-};
+}

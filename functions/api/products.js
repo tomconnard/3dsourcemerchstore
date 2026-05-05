@@ -1,25 +1,17 @@
-// netlify/functions/products.js
-// Fetches active products from your Notion database and returns them as JSON.
-// Notion API key is read from NOTION_KEY env var (set in Netlify dashboard).
-// Database ID is read from NOTION_DATABASE_ID env var.
-
 const NOTION_VERSION = '2022-06-28';
 
-exports.handler = async (event) => {
-  const NOTION_KEY = process.env.NOTION_KEY;
-  const DATABASE_ID = process.env.NOTION_DATABASE_ID;
+export async function onRequestGet(context) {
+  const NOTION_KEY = context.env.NOTION_KEY;
+  const DATABASE_ID = context.env.NOTION_DATABASE_ID;
 
   if (!NOTION_KEY || !DATABASE_ID) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: 'Missing NOTION_KEY or NOTION_DATABASE_ID environment variable.'
-      })
-    };
+    return Response.json(
+      { error: 'Missing NOTION_KEY or NOTION_DATABASE_ID environment variable.' },
+      { status: 500 }
+    );
   }
 
   try {
-    // Query Notion: only return rows where Active = true, sorted by Title
     const response = await fetch(`https://api.notion.com/v1/databases/${DATABASE_ID}/query`, {
       method: 'POST',
       headers: {
@@ -42,15 +34,14 @@ exports.handler = async (event) => {
 
     if (!response.ok) {
       const errText = await response.text();
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: 'Notion API error', details: errText })
-      };
+      return Response.json(
+        { error: 'Notion API error', details: errText },
+        { status: response.status }
+      );
     }
 
     const data = await response.json();
 
-    // Transform Notion's verbose format into clean product objects
     const products = data.results.map(row => {
       const props = row.properties;
 
@@ -76,20 +67,13 @@ exports.handler = async (event) => {
       };
     });
 
-    return {
-      statusCode: 200,
+    return Response.json(products, {
       headers: {
-        'Content-Type': 'application/json',
-        // Cache for 5 min on CDN, 1 min in browser
         'Cache-Control': 'public, max-age=60, s-maxage=300'
-      },
-      body: JSON.stringify(products)
-    };
+      }
+    });
 
   } catch (err) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message })
-    };
+    return Response.json({ error: err.message }, { status: 500 });
   }
-};
+}
