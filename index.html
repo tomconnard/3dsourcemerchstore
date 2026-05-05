@@ -1031,7 +1031,7 @@
 
   const filterDefs = [
     { key: 'type', label: 'Type' },
-    { key: 'garmentColor', label: 'Color' },
+    { key: 'colorGroup', label: 'Color' },
     { key: 'printType', label: 'Print' },
     { key: 'brand', label: 'Brand' },
     { key: 'logoColor', label: 'Logo Color' },
@@ -1125,8 +1125,26 @@
         throw new Error(err.error || `HTTP ${res.status}`);
       }
       products = await res.json();
+
+      const colorGroups = {
+        'Blacks': ['Black','Vintage Black','Heather Black','Midnight'],
+        'Greys': ['Grey','Grey Heather','Heather Grey','Dark Grey','Graphite','Charcoal Solid','Athletic Heather','Athletic Grey Triblend','Grey Triblend','Silver','Asphalt','Anthracite'],
+        'Whites': ['White','Vintage White','White Fleck Triblend','White Heather','Ivory','Natural','Bone'],
+        'Blues': ['Navy','Dark Navy','French Navy','True Navy','Blue Jean','Denim','Washed Denim','Flo Blue','Mystic Blue','Storm Blue','Cobalt','Carolina Blue','Heather Blue Lagoon','Storm','True Royal Triblend','Heather Grey/Navy'],
+        'Earth Tones': ['Vintage Brown','Tan Triblend','Sandstone','Sand','Khaki','Desert Dust','Dust','Pepper','Granite','Heather Stone','Navy/Khaki','Natural/Black','Black/Silver'],
+        'Warm': ['Dusty Rose']
+      };
+
+      function getColorGroup(color) {
+        for (const [group, members] of Object.entries(colorGroups)) {
+          if (members.includes(color)) return group;
+        }
+        return 'Other';
+      }
+
       products.forEach(p => {
         p.garmentColor = (p.colors || [])[0] || '';
+        p.colorGroup = getColorGroup(p.garmentColor);
         p.availableSize = p.sizes || [];
       });
       buildFilters();
